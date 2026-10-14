@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Seiva Estética — Demonstração</title>
+<style>html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#FBF9FC;color:#2A1A2D}body{display:grid;place-items:center}.load{padding:24px;text-align:center}.load b{display:block;font-size:20px;margin-bottom:8px}.load span{color:#6E5F73}</style>
+</head>
+<body>
+<div class="load"><b>Seiva Estética</b><span>Carregando demonstração…</span></div>
+<script>
+(async function(){
+  try{
+    const files=Array.from({length:17},(_,i)=>`payload/p${String(i+1).padStart(2,'0')}.txt`);
+    const parts=await Promise.all(files.map(async file=>{
+      const r=await fetch(file,{cache:'no-store'});
+      if(!r.ok) throw new Error(`Falha ao carregar ${file}`);
+      return r.text();
+    }));
+    const b64=parts.join('').replace(/\s+/g,'');
+    const bin=atob(b64);
+    const bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    const html=new TextDecoder('utf-8').decode(bytes);
+    document.open();
+    document.write(html);
+    document.close();
+  }catch(err){
+    console.error(err);
+    document.body.innerHTML='<div class="load"><b>Não foi possível abrir a demonstração.</b><span>Atualize a página e tente novamente.</span></div>';
+  }
+})();
+</script>
+</body>
+</html>
